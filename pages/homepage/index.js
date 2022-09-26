@@ -31,6 +31,12 @@ const Homepage = () => {
     hits: [],
   });
 
+  const [editorsResponse, setEditorsResponse] = useState({
+    total: "",
+    totalHits: "",
+    hits: [],
+  });
+
   const MySwal = withReactContent(Swal);
 
   const [loading, setLoading] = useState(false);
@@ -104,6 +110,33 @@ const Homepage = () => {
       fetchApi = false;
     };
   }, [search]);
+
+  useEffect(() => {
+    let fetching = true;
+
+    async function fetchApi() {
+      let fetchResponse;
+
+      setLoading(true);
+      fetchResponse = await axios.get(
+        `https://pixabay.com/api/?key=26032813-5eca57a90774446a771ac3a81&editors_choice=true`
+      );
+
+      setEditorsResponse({
+        ...editorsResponse,
+        totalHits: fetchResponse?.data?.totalHits,
+        hits: fetchResponse?.data?.hits,
+      });
+      console.log(fetchResponse);
+      setLoading(false);
+    }
+
+    fetchApi();
+
+    return () => {
+      fetchApi = false;
+    };
+  }, []);
 
   const onChangeFunc = (filter) => {
     setSearch(filter.target.value);
@@ -225,7 +258,15 @@ const Homepage = () => {
             ></input>
           </div>
 
-          <div style={{ visibility: "visible" }}>
+          <div
+            style={{
+              visibility: "visible",
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            {editorsResponse.totalHits}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
